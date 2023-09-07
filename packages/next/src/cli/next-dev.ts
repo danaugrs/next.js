@@ -28,6 +28,7 @@ import { createSelfSignedCertificate } from '../lib/mkcert'
 import uploadTrace from '../trace/upload-trace'
 import { loadEnvConfig } from '@next/env'
 import { trace } from '../trace'
+import { validateTurboNextConfig } from '../lib/turbopack-warning'
 
 let dir: string
 let config: NextConfigComplete
@@ -346,6 +347,11 @@ const nextDev: CliCommand = async (argv) => {
 
   if (args['--turbo']) {
     process.env.TURBOPACK = '1'
+    await validateTurboNextConfig({
+      isCustomTurbopack: !!process.env.__INTERNAL_CUSTOM_TURBOPACK_BINDINGS,
+      ...devServerOptions,
+      isDev: true,
+    })
   }
 
   const distDir = path.join(dir, config.distDir ?? '.next')
